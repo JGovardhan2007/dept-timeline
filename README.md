@@ -1,59 +1,95 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Department Activity Timeline 🎓
 
-# Run and deploy your AI Studio app
+A modern, interactive timeline application designed to showcase the achievements, events, and milestones of the **Department of Information Technology** at **Vidya Jyothi Institute Of Technology**.
 
-This contains everything you need to run your app locally.
+Built with React, Vite, and Firebase, this application provides a dynamic way to track and display departmental history.
 
-View your app in AI Studio: https://ai.studio/apps/drive/17JCPc-LAPvTZ4bdMSOMFpb0rFvCdzbHU
+![Department Timeline Banner](public/logo.jpg)
 
-## Run Locally
+## ✨ Features
 
-**Prerequisites:**  Node.js
+- **Interactive Timeline**: A beautiful, responsive vertical timeline displaying events chronologically.
+- **Rich Media Support**: Upload multiple images per entry or attach PDFs. Includes a built-in image carousel and error handling.
+- **Dynamic Filtering**: Filter events by **Year**, **Category** (Student, Faculty, Event, Collab), or search by text.
+- **Admin Dashboard**: Secure (client-side) admin interface to Create, Edit, and Delete timeline entries.
+- **Firebase Integration**: Real-time data persistence using Firebase Firestore and robust image handling.
+- **Responsive Design**: Fully optimized for desktops, tablets, and mobile devices.
 
+## 🛠️ Tech Stack
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- **Frontend**: [React 18](https://reactjs.org/) with [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Backend / Database**: [Firebase Firestore](https://firebase.google.com/products/firestore)
 
-## Firebase (optional) — migrate localStorage to Firestore
+## 🚀 Getting Started
 
-This project supports using Firebase Firestore + Storage instead of the built-in `localStorage` persistence. If you configure Firebase (see `.env.example`) the app will automatically use Firestore for CRUD and Storage for uploads.
+Follow these instructions to set up the project locally.
 
-Setup:
+### Prerequisites
 
-1. Create a Firebase project at https://console.firebase.google.com/
-2. In Project Settings -> Service accounts -> Generate new private key and save the JSON file locally (for migration only).
-3. Copy `.env.example` to `.env.local` and fill the `VITE_FIREBASE_*` values.
-4. Install dependencies and start the dev server:
+- Node.js (v16 or higher)
+- npm or yarn
+- A Firebase project
 
-```bash
-npm install
-npm run dev
-```
+### Installation
 
-One-time migration from your browser localStorage to Firestore:
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/JGovardhan2007/dept-timeline.git
+    cd dept-timeline
+    ```
 
-- Export your existing data from the browser console:
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-```js
-// In your app (opened in the browser console)
-copy(localStorage.getItem('dept_timeline_data'))
-// Paste into a file named export.json
-```
+3.  **Configure Firebase**
+    - Create a `.env.local` file in the root directory.
+    - Copy the contents from `.env.example` (if available) or add your Firebase keys:
+    ```env
+    VITE_FIREBASE_API_KEY=your_api_key
+    VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+    VITE_FIREBASE_PROJECT_ID=your_project_id
+    VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+    VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+    VITE_FIREBASE_APP_ID=your_app_id
+    ```
 
-- Run the migration script using a Firebase service account JSON and the exported data:
+4.  **Run the development server**
+    ```bash
+    npm run dev
+    ```
 
-```bash
-# Place your service account JSON somewhere, e.g. ./serviceAccount.json
-# Place the exported data in ./export.json
-npm run migrate:local-to-firebase -- ./serviceAccount.json ./export.json
-```
+## 📸 How to Use
 
-Notes:
-- The migration script uses the Firebase Admin SDK and requires a service account JSON.
-- Documents are written to the `entries` collection; existing documents with the same `id` will be overwritten.
-- If you prefer a browser-based migration instead of the CLI, ask me and I can add an admin-only migration button in the app.
+### Viewing the Timeline
+- Scroll through the timeline to see events.
+- Click on an event card to view **details** and **full-size attachments**.
+- Use the filter bar at the top to narrow down results by year or category.
+
+### Adding Entries (Admin)
+1.  Click the "Admin Login" button in the navigation bar.
+2.  Enter the admin credentials (configured in code).
+3.  Click "New Entry" to open the form.
+4.  Add a title, description, date, and category.
+5.  **Images**: You can paste multiple direct image URLs (e.g., from Imgur) or Google Drive links. The app automatically converts Drive links for display.
+
+## 🤝 Contributing
+
+Contributions are welcome! If you have suggestions or bug fixes, please open an issue or submit a pull request.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+*Developed for the Dept of IT, VJIT.*
