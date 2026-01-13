@@ -18,7 +18,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess, onCancel }) =
       setError('Too many attempts. Access locked.');
       return;
     }
-    
+
     if (pin === ADMIN_PIN) {
       onSuccess();
     } else {
@@ -44,7 +44,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess, onCancel }) =
             <input
               type="password"
               inputMode="numeric"
-              maxLength={6}
+              maxLength={ADMIN_PIN.length}
               value={pin}
               onChange={(e) => { setError(''); setPin(e.target.value); }}
               placeholder="Enter PIN"
@@ -63,7 +63,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess, onCancel }) =
           </button>
         </form>
 
-        <button 
+        <button
           onClick={onCancel}
           className="w-full mt-4 text-sm text-slate-400 hover:text-slate-600"
         >

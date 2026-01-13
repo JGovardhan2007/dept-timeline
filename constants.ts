@@ -36,7 +36,7 @@ export const CATEGORIES: Record<CategoryType, CategoryConfig> = {
   },
 };
 
-export const ADMIN_PIN = "123456"; // Simple PIN for demo purposes
+export const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN || "123456";
 export const MAX_LOGIN_ATTEMPTS = 5;
 
 // Initial seed data to populate the timeline if empty
