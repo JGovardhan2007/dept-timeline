@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TimelineEntry } from '../types';
 import { CATEGORIES } from '../constants';
-import { Star, Trash2, Edit, FileText, ArrowRight } from 'lucide-react';
+import { Star, Trash2, Edit, FileText, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const ImageWithFallback = ({ src, className }: { src: string, className?: string }) => {
     const [error, setError] = useState(false);
 
     if (error) {
         return (
-            <div className={`w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-400 p-1`}>
-                <span className="text-[10px] text-center leading-tight">Image Error</span>
+            <div className={`w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-700 p-1`}>
+                <span className="text-[10px] text-center leading-tight">ERR</span>
             </div>
         );
     }
@@ -57,18 +57,18 @@ export const ImageCarousel = ({ urls, className }: { urls: string[], className?:
                 ))}
             </div>
 
-            {/* Navigation Buttons (Only visible on hover) */}
+            {/* Navigation Buttons (Always visible or visible on hover) */}
             <button
                 onClick={prevImage}
-                className="absolute left-0 top-0 bottom-0 px-1 bg-black/10 hover:bg-black/30 text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity flex items-center justify-center"
+                className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white opacity-0 group-hover/carousel:opacity-100 transition-all backdrop-blur-sm"
             >
-                <span className="text-xs">&lsaquo;</span>
+                <ChevronLeft className="w-5 h-5" />
             </button>
             <button
                 onClick={nextImage}
-                className="absolute right-0 top-0 bottom-0 px-1 bg-black/10 hover:bg-black/30 text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity flex items-center justify-center"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white opacity-0 group-hover/carousel:opacity-100 transition-all backdrop-blur-sm"
             >
-                <span className="text-xs">&rsaquo;</span>
+                <ChevronRight className="w-5 h-5" />
             </button>
         </div>
     );
@@ -100,8 +100,8 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, index, isAdmi
                 }
             },
             {
-                threshold: 0.1, // Trigger when 10% visible
-                rootMargin: '50px',
+                threshold: 0.1,
+                rootMargin: '-50px', // Trigger slightly after entering viewport for effect
             }
         );
 
@@ -112,103 +112,42 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, index, isAdmi
         return () => observer.disconnect();
     }, []);
 
-    // Determine layout direction (Alternating)
-    const isLeft = index % 2 === 0;
 
-    const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric'
-        });
-    };
+    const dateObj = new Date(entry.date);
+    const day = dateObj.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' }).replace('/', '/');
+    const time = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const year = dateObj.getFullYear();
 
-    const formatYear = (dateStr: string) => {
-        return new Date(dateStr).getFullYear();
-    }
+    // Check if stacked styling is needed
+    const isFeatured = entry.featured;
 
     return (
-        <div ref={cardRef} className={`relative mb-12 last:mb-0 group/card reveal-on-scroll ${isVisible ? 'is-visible' : ''}`}>
+        <div ref={cardRef} className={`relative group/card flex gap-4 sm:gap-6 transform transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95'}`}>
 
-            {/* Desktop Layout (md+) */}
-            <div className="hidden md:grid md:grid-cols-11 items-center">
-
-                {/* Left Side */}
-                <div className={`col-span-5 ${isLeft ? 'text-right pr-8' : 'text-right pr-8'}`}>
-                    {isLeft ? (
-                        <CardContent
-                            entry={entry}
-                            categoryConfig={categoryConfig}
-                            isAdmin={isAdmin}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                            onView={onView}
-                            align="right"
-                        />
-                    ) : (
-                        <DatePill date={formatDate(entry.date)} year={formatYear(entry.date)} featured={entry.featured} align="right" />
-                    )}
-                </div>
-
-                {/* Center Line & Icon */}
-                <div className="col-span-1 flex justify-center relative h-full min-h-[120px]">
-                    {/* Vertical Line */}
-                    <div className="absolute top-0 bottom-0 w-1 bg-slate-200 -z-10 transform origin-top transition-transform duration-1000 ease-out"></div>
-
-                    {/* Icon Node */}
-                    <div className={`relative z-10 w-12 h-12 rounded-full border-4 border-white shadow-md flex items-center justify-center transition-all duration-300 group-hover/card:scale-110 group-hover/card:shadow-lg icon-float ${categoryConfig.bgColor} ${categoryConfig.color}`}>
-                        <Icon className="w-6 h-6" />
-                    </div>
-                </div>
-
-                {/* Right Side */}
-                <div className={`col-span-5 ${isLeft ? 'text-left pl-8' : 'text-left pl-8'}`}>
-                    {isLeft ? (
-                        <DatePill date={formatDate(entry.date)} year={formatYear(entry.date)} featured={entry.featured} align="left" />
-                    ) : (
-                        <CardContent
-                            entry={entry}
-                            categoryConfig={categoryConfig}
-                            isAdmin={isAdmin}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                            onView={onView}
-                            align="left"
-                        />
-                    )}
-                </div>
-
+            {/* 1. Date Column (Left) */}
+            <div className="w-16 sm:w-20 pt-2 flex flex-col items-end text-right flex-shrink-0">
+                <span className="text-[10px] font-bold text-stone-600 leading-tight block">{year}</span>
+                <span className="text-xl sm:text-2xl font-black text-stone-400 leading-none block tracking-tighter">{day}</span>
+                <span className="text-[10px] font-mono text-stone-600 mt-1 block">{time}</span>
             </div>
 
-            {/* Mobile Layout (< md) */}
-            <div className="md:hidden pl-10 relative">
-                {/* Vertical Line */}
-                <div className="absolute left-[19px] top-0 bottom-0 w-1 bg-slate-200"></div>
+            {/* 2. Timeline Line & Dot */}
+            <div className="relative flex flex-col items-center flex-shrink-0 w-4">
+                {/* Dot */}
+                <div className={`w-3 h-3 rounded-full border-2 border-black z-10 mt-3 transition-all duration-300 ${isFeatured ? 'bg-amber-500 scale-125' : 'bg-stone-600 group-hover/card:bg-blue-500 group-hover/card:scale-125 group-hover/card:border-blue-900'}`}></div>
+            </div>
 
-                {/* Icon Node */}
-                <div className={`absolute left-0 top-0 w-10 h-10 rounded-full border-4 border-white shadow-md flex items-center justify-center z-10 transition-transform duration-300 group-hover/card:scale-110 ${categoryConfig.bgColor} ${categoryConfig.color}`}>
-                    <Icon className="w-5 h-5" />
-                </div>
-
-                {/* Mobile Card */}
-                <div className="mb-6 pt-1">
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-500 bg-white/80 backdrop-blur px-2 py-0.5 rounded-full border border-slate-200 shadow-sm">
-                            {formatDate(entry.date)}, {formatYear(entry.date)}
-                        </span>
-                        {entry.featured && <Star className="w-4 h-4 text-amber-500 fill-amber-500 animate-pulse" />}
-                    </div>
-
-                    <CardContent
-                        entry={entry}
-                        categoryConfig={categoryConfig}
-                        isAdmin={isAdmin}
-                        onEdit={onEdit}
-                        onDelete={onDelete}
-                        onView={onView}
-                        align="left"
-                        isMobile
-                    />
-                </div>
+            {/* 3. Content Card */}
+            <div className="flex-grow min-w-0 pb-4">
+                <CardContent
+                    entry={entry}
+                    categoryConfig={categoryConfig}
+                    isAdmin={isAdmin}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    onView={onView}
+                    isFeatured={isFeatured}
+                />
             </div>
 
         </div>
@@ -216,25 +155,6 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, index, isAdmi
 };
 
 // Sub-components
-
-const DatePill = ({ date, year, featured, align }: { date: string, year: number, featured: boolean, align: 'left' | 'right' }) => (
-    <div className={`flex flex-col justify-center transition-all duration-500 ${align === 'right' ? 'items-end' : 'items-start'}`}>
-        <div className={`flex flex-col ${align === 'right' ? 'items-end' : 'items-start'} group-hover/card:scale-105 transition-transform duration-300`}>
-            <div className="text-2xl font-black text-slate-300 leading-none mb-1 group-hover/card:text-slate-400 transition-colors">{year}</div>
-            <div className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold shadow-sm 
-            bg-gradient-to-r from-indigo-500 to-violet-500 text-white`}>
-                {date}
-            </div>
-        </div>
-
-        {featured && (
-            <div className="mt-2 flex items-center text-amber-500 text-xs font-bold uppercase tracking-wide bg-amber-50 px-2 py-1 rounded border border-amber-100">
-                <Star className="w-3 h-3 mr-1 fill-amber-500" /> Featured
-            </div>
-        )}
-    </div>
-);
-
 const CardContent = ({
     entry,
     categoryConfig,
@@ -242,79 +162,71 @@ const CardContent = ({
     onEdit,
     onDelete,
     onView,
-    align,
-    isMobile
+    isFeatured
 }: any) => {
-    // Determine styles based on alignment
-    const isRightAligned = align === 'right' && !isMobile;
-    const isPdf = entry.mediaUrl?.toLowerCase().includes('.pdf') || entry.mediaUrl?.toLowerCase().includes('type=pdf');
 
     return (
-        <div
-            onClick={() => onView && onView(entry)}
-            className={`bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover-bounce cursor-pointer group relative overflow-hidden h-full flex flex-col ${isRightAligned ? 'text-right items-end' : 'text-left items-start'}`}
-        >
+        <div className="relative group/content">
+            {/* Stacked Cards Effect (Interactive Hover) */}
+            <div className={`absolute inset-0 bg-stone-800 rounded-xl translate-x-1 translate-y-1 sm:translate-x-2 sm:translate-y-2 -z-10 border border-stone-700/50 transition-all duration-300 ${isFeatured ? 'opacity-100' : 'opacity-0 group-hover/card:opacity-100'}`}></div>
+            <div className={`absolute inset-0 bg-stone-800/60 rounded-xl translate-x-2 translate-y-2 sm:translate-x-4 sm:translate-y-4 -z-20 border border-stone-700/30 transition-all duration-300 ${isFeatured ? 'opacity-100' : 'opacity-0 group-hover/card:opacity-100'}`}></div>
 
-            {/* Decorative Top Border */}
-            <div className={`absolute top-0 left-0 right-0 h-1.5 ${categoryConfig.bgColor.replace('bg-', 'bg-').replace('50', '500')}`}></div>
-
-            {/* Category Tag & Admin */}
-            <div className={`w-full mb-3 flex ${isRightAligned ? 'justify-end flex-row-reverse' : 'justify-between'} items-center gap-2`}>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${categoryConfig.bgColor} ${categoryConfig.color}`}>
-                    {categoryConfig.label}
-                </span>
-
-                {/* Admin Controls */}
-                {isAdmin && (
-                    <div onClick={(e) => e.stopPropagation()}>
-                        <AdminButtons onEdit={() => onEdit(entry)} onDelete={() => onDelete(entry.id)} />
+            <div
+                onClick={() => onView && onView(entry)}
+                className={`
+                    relative 
+                    bg-stone-900 
+                    rounded-xl 
+                    overflow-hidden 
+                    border 
+                    cursor-pointer 
+                    transition-all 
+                    duration-300
+                    hover:-translate-y-1
+                    ${isFeatured
+                        ? 'border-amber-500 shadow-[0_4px_20px_-4px_rgba(245,158,11,0.3)]'
+                        : 'border-stone-800 group-hover/card:border-blue-600 group-hover/card:shadow-[0_4px_20px_-4px_rgba(37,99,235,0.3)]'
+                    }
+                `}
+            >
+                {/* Hover Shine Effect */}
+                <div className="absolute inset-0 opacity-0 group-hover/content:opacity-30 transition-opacity duration-500 pointer-events-none z-20">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/content:animate-[shine_1.5s_infinite]" />
+                </div>
+                {/* Image Section */}
+                {entry.mediaUrls && entry.mediaUrls.length > 0 && (
+                    <div className={`w-full ${isFeatured ? 'aspect-video' : 'h-48'} bg-black border-b border-stone-800`}>
+                        <ImageCarousel urls={entry.mediaUrls} className="w-full h-full object-cover" />
                     </div>
                 )}
-            </div>
 
-            <div className="flex gap-4 w-full">
-                {/* Thumbnail (if exists and on Desktop/Mobile Logic) */}
-                {entry.mediaUrls && entry.mediaUrls.length > 0 && !isRightAligned && (
-                    <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-slate-100 overflow-hidden border border-slate-200 shadow-sm group-hover:shadow-md transition-all relative">
-                        {isPdf ? (
-                            <div className="w-full h-full flex items-center justify-center bg-slate-50 text-red-400">
-                                <FileText className="w-6 h-6" />
-                            </div>
-                        ) : (
-                            <ImageCarousel urls={entry.mediaUrls} className="w-full h-full object-cover transform transition-transform duration-500" />
-                        )}
+                {/* Content Body */}
+                <div className="p-4 sm:p-5">
+                    {/* Header Row */}
+                    <div className="flex justify-between items-start mb-2">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1 block`}>
+                            {categoryConfig.label}
+                        </span>
+                        {isAdmin && <AdminButtons onEdit={() => onEdit(entry)} onDelete={() => onDelete(entry.id)} />}
                     </div>
-                )}
 
-                <div className="flex-grow min-w-0">
-                    <h3 className="text-lg font-bold text-slate-800 mb-2 leading-tight group-hover:text-indigo-700 transition-colors">
+                    <h3 className="text-base sm:text-lg font-bold text-stone-100 mb-2 leading-snug">
                         {entry.title}
                     </h3>
 
-                    <p className={`text-slate-500 text-sm leading-relaxed line-clamp-2`}>
+                    <p className="text-stone-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-3">
                         {entry.description}
                     </p>
+
+                    {/* Footer Row (Tags) */}
+                    <div className="flex flex-wrap gap-2 mt-auto pt-2 border-t border-white/5">
+                        <span className="inline-flex items-center text-[10px] font-medium text-stone-500 bg-stone-950 border border-stone-800 px-2 py-0.5 rounded-full">
+                            #{entry.category.toLowerCase()}
+                        </span>
+                        {isFeatured && <span className="inline-flex items-center text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">#FEATURED</span>}
+                    </div>
                 </div>
 
-                {/* Thumbnail (if Right Aligned) */}
-                {entry.mediaUrls && entry.mediaUrls.length > 0 && isRightAligned && (
-                    <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-slate-100 overflow-hidden border border-slate-200 shadow-sm group-hover:shadow-md transition-all relative">
-                        {isPdf ? (
-                            <div className="w-full h-full flex items-center justify-center bg-slate-50 text-red-400">
-                                <FileText className="w-6 h-6" />
-                            </div>
-                        ) : (
-                            <ImageCarousel urls={entry.mediaUrls} className="w-full h-full object-cover transform transition-transform duration-500" />
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {/* View Details Indicator */}
-            <div className={`mt-4 pt-3 border-t border-slate-50 w-full flex ${isRightAligned ? 'justify-end' : 'justify-start'}`}>
-                <span className="text-xs font-semibold text-indigo-500 flex items-center gap-1 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                    View Details <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
-                </span>
             </div>
         </div>
     )
@@ -322,7 +234,7 @@ const CardContent = ({
 
 const AdminButtons = ({ onEdit, onDelete }: any) => (
     <div className="flex gap-1 z-20 relative">
-        <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><Edit className="w-3.5 h-3.5" /></button>
-        <button onClick={(e) => { e.stopPropagation(); if (window.confirm('Delete?')) onDelete(); }} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+        <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 text-stone-500 hover:text-blue-400 hover:bg-blue-500/10 rounded transition-colors"><Edit className="w-3 h-3" /></button>
+        <button onClick={(e) => { e.stopPropagation(); if (window.confirm('Delete?')) onDelete(); }} className="p-1 text-stone-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"><Trash2 className="w-3 h-3" /></button>
     </div>
 );

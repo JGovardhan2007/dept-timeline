@@ -138,24 +138,24 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-lg rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="bg-stone-900 border border-stone-800 w-full max-w-lg rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-100">
-          <h2 className="text-xl font-bold text-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-stone-800">
+          <h2 className="text-xl font-bold text-white">
             {initialData ? 'Edit Activity' : 'New Activity'}
           </h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+          <button onClick={onClose} className="text-stone-500 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-6 overflow-y-auto no-scrollbar">
+        <div className="p-6 overflow-y-auto custom-scrollbar">
           <form id="entry-form" onSubmit={handleSubmit} className="space-y-5">
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+              <label className="block text-sm font-medium text-stone-400 mb-1">Title</label>
               <input
                 required
                 type="text"
@@ -163,19 +163,19 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Ex: National Robotics Competition"
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                className="w-full px-4 py-2 bg-black border border-stone-700 rounded-lg text-white placeholder:text-stone-600 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition"
               />
             </div>
 
             {/* Category */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                <label className="block text-sm font-medium text-stone-400 mb-1">Category</label>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
+                  className="w-full px-4 py-2 bg-black border border-stone-700 rounded-lg text-white focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none"
                 >
                   {Object.values(CATEGORIES).map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.label}</option>
@@ -183,21 +183,21 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                <label className="block text-sm font-medium text-stone-400 mb-1">Date</label>
                 <input
                   required
                   type="date"
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-2 bg-black border border-stone-700 rounded-lg text-white focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none [color-scheme:dark]"
                 />
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-stone-400 mb-1">Description</label>
               <textarea
                 required
                 name="description"
@@ -205,37 +205,37 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
                 onChange={handleChange}
                 rows={4}
                 placeholder="Briefly describe the activity, achievement, or event..."
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none"
+                className="w-full px-4 py-2 bg-black border border-stone-700 rounded-lg text-white placeholder:text-stone-600 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none resize-none"
               ></textarea>
             </div>
 
             {/* Media Upload */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Attachment</label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors bg-slate-50">
+              <label className="block text-sm font-medium text-stone-400 mb-1">Attachment</label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-stone-800 border-dashed rounded-lg hover:border-blue-500/50 transition-colors bg-black/40">
                 <div className="space-y-1 text-center">
                   {file ? (
-                    file.type.includes('pdf') ? <FileText className="mx-auto h-8 w-8 text-red-400" /> : <ImageIcon className="mx-auto h-8 w-8 text-indigo-400" />
+                    file.type.includes('pdf') ? <FileText className="mx-auto h-8 w-8 text-red-500" /> : <ImageIcon className="mx-auto h-8 w-8 text-blue-500" />
                   ) : (
-                    <Upload className="mx-auto h-8 w-8 text-slate-400" />
+                    <Upload className="mx-auto h-8 w-8 text-stone-600" />
                   )}
-                  <div className="flex text-sm text-slate-600 justify-center">
-                    <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                  <div className="flex text-sm text-stone-400 justify-center">
+                    <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-blue-500 hover:text-blue-400 focus-within:outline-none">
                       <span>Upload a file</span>
                       <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept="image/*,.pdf" />
                     </label>
                     <p className="pl-1">or drag and drop</p>
                   </div>
-                  <p className="text-xs text-slate-500">PNG, JPG, PDF up to 5MB</p>
-                  {file && <p className="text-sm text-slate-800 font-medium mt-2">{file.name}</p>}
-                  {!file && formData.mediaUrl && <p className="text-xs text-slate-400 break-all mt-2">Current: {formData.mediaUrl.substring(0, 30)}...</p>}
+                  <p className="text-xs text-stone-600">PNG, JPG, PDF up to 5MB</p>
+                  {file && <p className="text-sm text-white font-medium mt-2">{file.name}</p>}
+                  {!file && formData.mediaUrl && <p className="text-xs text-stone-500 break-all mt-2">Current: {formData.mediaUrl.substring(0, 30)}...</p>}
                 </div>
               </div>
             </div>
 
             {/* Image URLs Input */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Image URLs (Google Drive / Direct Links)</label>
+              <label className="block text-sm font-medium text-stone-400 mb-1">Image URLs (Google Drive / Direct Links)</label>
               <div className="flex gap-2 mb-2">
                 <input
                   type="url"
@@ -243,12 +243,12 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
                   onChange={(e) => setCurrentUrl(e.target.value)}
                   placeholder="Paste link here..."
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddUrl(e); } }} // Allow Enter key
-                  className="flex-grow px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                  className="flex-grow px-4 py-2 bg-black border border-stone-700 rounded-lg text-white placeholder:text-stone-600 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition"
                 />
                 <button
                   type="button"
                   onClick={handleAddUrl}
-                  className="px-4 py-2 bg-slate-100 text-slate-600 font-medium rounded-lg hover:bg-slate-200 transition-colors"
+                  className="px-4 py-2 bg-stone-800 text-stone-300 font-medium rounded-lg hover:bg-stone-700 transition-colors border border-stone-700"
                 >
                   Add
                 </button>
@@ -256,18 +256,18 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
 
               {/* URL List */}
               {formData.mediaUrls && formData.mediaUrls.length > 0 && (
-                <div className="space-y-2 max-h-40 overflow-y-auto mb-2">
+                <div className="space-y-2 max-h-40 overflow-y-auto mb-2 custom-scrollbar">
                   {formData.mediaUrls.map((url, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-slate-50 px-3 py-2 rounded border border-slate-200 text-sm">
-                      <span className="truncate max-w-[85%] text-slate-600" title={url}>{url}</span>
-                      <button type="button" onClick={() => removeUrl(idx)} className="text-red-400 hover:text-red-600">
+                    <div key={idx} className="flex items-center justify-between bg-stone-950 px-3 py-2 rounded border border-stone-800 text-sm">
+                      <span className="truncate max-w-[85%] text-stone-400" title={url}>{url}</span>
+                      <button type="button" onClick={() => removeUrl(idx)} className="text-red-500 hover:text-red-400">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   ))}
                 </div>
               )}
-              <p className="text-xs text-slate-500 mt-1">Add multiple Google Drive or direct image links.</p>
+              <p className="text-xs text-stone-600 mt-1">Add multiple Google Drive or direct image links.</p>
             </div>
 
             {/* Featured Toggle */}
@@ -278,9 +278,9 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
                 type="checkbox"
                 checked={formData.featured}
                 onChange={handleCheckboxChange}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-stone-700 rounded bg-black"
               />
-              <label htmlFor="featured" className="ml-2 block text-sm text-slate-900">
+              <label htmlFor="featured" className="ml-2 block text-sm text-stone-300">
                 Mark as Featured Achievement
               </label>
             </div>
@@ -288,11 +288,11 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 flex justify-end space-x-3 bg-slate-50 rounded-b-xl">
+        <div className="p-6 border-t border-stone-800 flex justify-end space-x-3 bg-stone-950 rounded-b-xl">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-stone-400 hover:bg-stone-800 rounded-lg transition-colors"
           >
             Cancel
           </button>
@@ -300,7 +300,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
             form="entry-form"
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm disabled:opacity-70 transition-colors"
+            className="flex items-center px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm disabled:opacity-70 transition-colors"
           >
             {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             {initialData ? 'Update Entry' : 'Create Entry'}

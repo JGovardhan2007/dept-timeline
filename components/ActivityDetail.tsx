@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TimelineEntry } from '../types';
 import { CATEGORIES } from '../constants';
 import { X, Calendar, Download, ExternalLink, Star, FileText } from 'lucide-react';
@@ -32,27 +32,35 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ entry, onClose }
   const isPdf = (url: string) => url?.toLowerCase().includes('.pdf') || url?.toLowerCase().includes('type=pdf');
   const primaryIsPdf = mediaList.length > 0 && isPdf(mediaList[0]);
 
+  // Lock Body Scroll
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 animate-fade-in"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 animate-fade-in"
         onClick={onClose}
       ></div>
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
+      <div className="relative w-full max-w-3xl bg-stone-900 border border-stone-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
 
         {/* Close Button (Floating) */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 bg-black/20 hover:bg-black/40 hover:scale-110 active:scale-95 text-white rounded-full backdrop-blur-md transition-all"
+          className="absolute top-4 right-4 z-20 p-2 bg-black/50 hover:bg-black/70 hover:scale-110 active:scale-95 text-white rounded-full backdrop-blur-md transition-all border border-white/10"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Hero Media Section */}
-        <div className="relative h-64 sm:h-80 bg-slate-100 flex-shrink-0 group overflow-hidden">
+        <div className="relative h-64 sm:h-80 bg-black flex-shrink-0 group overflow-hidden border-b border-stone-800">
           {mediaList.length > 0 && !primaryIsPdf ? (
             <ImageCarousel
               urls={mediaList}
@@ -91,27 +99,27 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ entry, onClose }
         </div>
 
         {/* Content Section */}
-        <div className="flex-grow overflow-y-auto p-6 sm:p-8">
+        <div className="flex-grow overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <div className="mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <div className="flex items-center text-slate-500 text-sm font-medium mb-2">
+            <div className="flex items-center text-stone-400 text-sm font-medium mb-2">
               <Calendar className="w-4 h-4 mr-2" />
               {formatDate(entry.date)}
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
               {entry.title}
             </h2>
           </div>
 
-          <div className="prose prose-slate max-w-none animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <p className="text-slate-600 text-base sm:text-lg leading-relaxed whitespace-pre-wrap">
+          <div className="prose prose-invert max-w-none animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <p className="text-stone-300 text-base sm:text-lg leading-relaxed whitespace-pre-wrap">
               {entry.description}
             </p>
           </div>
 
           {/* Attachments Section */}
           {mediaList.length > 0 && (
-            <div className="mt-8 pt-6 border-t border-slate-100 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3">
+            <div className="mt-8 pt-6 border-t border-stone-800 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <h4 className="text-sm font-bold text-white uppercase tracking-wide mb-3">
                 Attachments ({mediaList.length})
               </h4>
 
@@ -124,10 +132,10 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ entry, onClose }
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between p-4 border border-slate-200 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:border-indigo-200 hover:shadow-md transition-all group hover:-translate-y-1"
+                      className="flex items-center justify-between p-4 border border-stone-800 rounded-xl bg-stone-950 hover:bg-stone-900 hover:border-blue-900/50 hover:shadow-md transition-all group hover:-translate-y-1"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="bg-white p-2 rounded-lg border border-slate-100 shadow-sm overflow-hidden flex-shrink-0">
+                        <div className="bg-stone-900 p-2 rounded-lg border border-stone-800 shadow-sm overflow-hidden flex-shrink-0">
                           {pdf ? (
                             <FileText className="w-6 h-6 text-red-500" />
                           ) : (
@@ -141,11 +149,11 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ entry, onClose }
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-slate-800 group-hover:text-indigo-700 truncate max-w-[200px] sm:max-w-xs">{pdf ? 'View PDF Document' : 'View Original Image'} {idx + 1}</p>
-                          <p className="text-xs text-slate-500 truncate max-w-[200px]">{url}</p>
+                          <p className="text-sm font-semibold text-stone-300 group-hover:text-blue-400 truncate max-w-[200px] sm:max-w-xs">{pdf ? 'View PDF Document' : 'View Original Image'} {idx + 1}</p>
+                          <p className="text-xs text-stone-600 truncate max-w-[200px]">{url}</p>
                         </div>
                       </div>
-                      <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all flex-shrink-0" />
+                      <ExternalLink className="w-4 h-4 text-stone-600 group-hover:text-blue-500 group-hover:translate-x-1 transition-all flex-shrink-0" />
                     </a>
                   );
                 })}
@@ -154,8 +162,8 @@ export const ActivityDetail: React.FC<ActivityDetailProps> = ({ entry, onClose }
           )}
         </div>
 
-        {/* Footer (Optional ID or Tag) */}
-        <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
+        {/* Footer */}
+        <div className="bg-stone-950 px-6 py-4 border-t border-stone-800 flex justify-between items-center text-xs text-stone-600">
           <span>ID: {entry.id.split('-')[0]}...</span>
           <span>Dept. Activity Timeline</span>
         </div>

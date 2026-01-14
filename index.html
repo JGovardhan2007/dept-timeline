@@ -30,6 +30,24 @@
       scrollbar-width: none;
     }
 
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #000;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
     /* Modern Grid Background */
     .bg-grid-slate-200 {
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='%23e2e8f0'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
@@ -130,6 +148,175 @@
 
     .icon-float:hover {
       animation: float 3s ease-in-out infinite;
+    }
+
+    /* Shine Effect */
+    @keyframes shine {
+      0% {
+        background-position: 200% center;
+      }
+
+      100% {
+        background-position: -200% center;
+      }
+    }
+
+    .animate-shine {
+      background: linear-gradient(to right,
+          transparent 20%,
+          rgba(255, 255, 255, 0.1) 40%,
+          rgba(255, 255, 255, 0.2) 50%,
+          rgba(255, 255, 255, 0.1) 60%,
+          transparent 80%);
+      background-size: 200% auto;
+      animation: shine 4s linear infinite;
+      clip-path: inset(0);
+    }
+
+    /* Glitch Animations */
+    .glitch-effect {
+      position: relative;
+    }
+
+    .glitch-effect::before,
+    .glitch-effect::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+
+    /* High Intensity Glitch */
+    .glitch-effect::before {
+      left: 4px;
+      text-shadow: -3px 0 #ff00c1;
+      clip: rect(24px, 550px, 90px, 0);
+      animation: glitch-anim-1 0.8s infinite linear alternate-reverse;
+    }
+
+    .glitch-effect::after {
+      left: -4px;
+      text-shadow: -3px 0 #00fff9;
+      clip: rect(85px, 550px, 140px, 0);
+      animation: glitch-anim-2 0.8s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitch-anim-1 {
+      0% {
+        clip: rect(20px, 9999px, 80px, 0);
+        transform: skew(0.5deg);
+      }
+
+      10% {
+        clip: rect(90px, 9999px, 10px, 0);
+        transform: skew(-3deg);
+      }
+
+      20% {
+        clip: rect(10px, 9999px, 90px, 0);
+        transform: skew(2deg);
+      }
+
+      30% {
+        clip: rect(80px, 9999px, 20px, 0);
+        transform: skew(0deg);
+      }
+
+      40% {
+        clip: rect(30px, 9999px, 50px, 0);
+        transform: skew(3deg);
+      }
+
+      50% {
+        clip: rect(60px, 9999px, 10px, 0);
+        transform: skew(-0.5deg);
+      }
+
+      60% {
+        clip: rect(90px, 9999px, 70px, 0);
+        transform: skew(2deg);
+      }
+
+      70% {
+        clip: rect(10px, 9999px, 40px, 0);
+        transform: skew(-2deg);
+      }
+
+      80% {
+        clip: rect(30px, 9999px, 80px, 0);
+        transform: skew(1deg);
+      }
+
+      90% {
+        clip: rect(50px, 9999px, 20px, 0);
+        transform: skew(0deg);
+      }
+
+      100% {
+        clip: rect(20px, 9999px, 60px, 0);
+        transform: skew(-1deg);
+      }
+    }
+
+    @keyframes glitch-anim-2 {
+      0% {
+        clip: rect(70px, 9999px, 20px, 0);
+        transform: skew(-1deg);
+      }
+
+      10% {
+        clip: rect(10px, 9999px, 60px, 0);
+        transform: skew(2deg);
+      }
+
+      20% {
+        clip: rect(50px, 9999px, 90px, 0);
+        transform: skew(-2deg);
+      }
+
+      30% {
+        clip: rect(20px, 9999px, 50px, 0);
+        transform: skew(0.5deg);
+      }
+
+      40% {
+        clip: rect(90px, 9999px, 10px, 0);
+        transform: skew(-3deg);
+      }
+
+      50% {
+        clip: rect(30px, 9999px, 80px, 0);
+        transform: skew(1deg);
+      }
+
+      60% {
+        clip: rect(60px, 9999px, 40px, 0);
+        transform: skew(0deg);
+      }
+
+      70% {
+        clip: rect(10px, 9999px, 70px, 0);
+        transform: skew(-1deg);
+      }
+
+      80% {
+        clip: rect(80px, 9999px, 20px, 0);
+        transform: skew(3deg);
+      }
+
+      90% {
+        clip: rect(20px, 9999px, 50px, 0);
+        transform: skew(-2deg);
+      }
+
+      100% {
+        clip: rect(40px, 9999px, 90px, 0);
+        transform: skew(0deg);
+      }
     }
   </style>
   <script type="importmap">

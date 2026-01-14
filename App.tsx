@@ -6,7 +6,8 @@ import { TimelineCard } from './components/TimelineCard';
 import { AdminLogin } from './components/AdminLogin';
 import { EntryForm } from './components/EntryForm';
 import { ActivityDetail } from './components/ActivityDetail';
-import { Filter, Search, Plus, LogOut, Loader2, GraduationCap, X, ChevronRight, Activity } from 'lucide-react';
+import { BackgroundParticles } from './components/BackgroundParticles';
+import { Search, Filter, Plus, LogOut, ChevronRight, Loader2, GraduationCap, X, ChevronDown, Activity, Calendar, Award } from 'lucide-react';
 
 const App: React.FC = () => {
     // State
@@ -19,6 +20,71 @@ const App: React.FC = () => {
     const [selectedYear, setSelectedYear] = useState<number | 'ALL'>('ALL');
     const [selectedCategory, setSelectedCategory] = useState<CategoryType | 'ALL'>('ALL');
     const [showFiltersMobile, setShowFiltersMobile] = useState(false);
+
+    // Scroll Logic for Parallax
+    const [scrollY, setScrollY] = useState(0);
+    useEffect(() => {
+        const handleScroll = () => setScrollY(window.scrollY);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Hacker Scramble Effect (Infinite Loop)
+    const [heroText, setHeroText] = useState('INFORMATION');
+    const [isGlitching, setIsGlitching] = useState(false);
+
+    useEffect(() => {
+        const words = ["INFORMATION", "INNOVATION"];
+        let currentIndex = 0;
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let interval: any = null;
+
+        const scrambleTo = (targetWord: string) => {
+            let iteration = 0;
+            setIsGlitching(true);
+
+            if (interval) clearInterval(interval);
+
+            interval = setInterval(() => {
+                setHeroText(prev =>
+                    prev
+                        .split("")
+                        .map((letter, index) => {
+                            if (index < iteration) {
+                                return targetWord[index] || "";
+                            }
+                            return letters[Math.floor(Math.random() * 26)];
+                        })
+                        .join("")
+                );
+
+                if (iteration >= targetWord.length) {
+                    clearInterval(interval);
+                    setIsGlitching(false);
+                    setHeroText(targetWord);
+                }
+
+                iteration += 1 / 3;
+            }, 30);
+        };
+
+        // Initial delay then loop
+        const loopTimeout = setTimeout(() => {
+            scrambleTo(words[1]); // First switch to INNOVATION
+            currentIndex = 1;
+        }, 2000);
+
+        const loopInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % words.length;
+            scrambleTo(words[currentIndex]);
+        }, 10000); // Toggle every 10 seconds
+
+        return () => {
+            clearTimeout(loopTimeout);
+            clearInterval(loopInterval);
+            if (interval) clearInterval(interval);
+        };
+    }, []);
 
     // Admin State
     const [isAdmin, setIsAdmin] = useState(false);
@@ -127,232 +193,213 @@ const App: React.FC = () => {
     const getEntryIndex = (id: string) => filteredEntries.findIndex(e => e.id === id);
 
     return (
-        <div className="min-h-screen flex flex-col font-sans text-slate-900 bg-transparent relative">
+        <div className="min-h-screen flex flex-col font-sans text-stone-200 bg-black relative selection:bg-blue-600 selection:text-white">
 
-            {/* Fixed Grid Background */}
+            {/* Subtle Gradient Spotlights & Particles */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute inset-0 bg-grid-slate-200 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25"></div>
-                <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-indigo-50/50 to-transparent"></div>
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[120px] opacity-40"></div>
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-900/10 rounded-full blur-[100px] opacity-30"></div>
+                <BackgroundParticles />
             </div>
 
-            {/* Navbar */}
-            <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/50 shadow-[0_1px_3px_0_rgba(0,0,0,0.05)] transition-all">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <img src="/logo.jpg" alt="College Logo" className="h-12 w-auto object-contain" />
+            {/* Minimal Mobile-Style Header */}
+            <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 pt-4 pb-4 px-4 sm:px-6 transition-all">
+                <div className="max-w-2xl mx-auto flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div>
+                            <h1 className="text-xl font-black tracking-tight text-white uppercase italic">
+                                # DEPT<span className="text-blue-600">TIMELINE</span>
+                            </h1>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        {isAdmin ? (
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={handleCreate}
-                                    className="hidden md:flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-full text-sm font-medium shadow-sm transition-all hover:shadow hover:scale-105 active:scale-95"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    New Entry
-                                </button>
-                                <button
-                                    onClick={handleLogout}
-                                    className="text-sm font-medium text-slate-500 hover:text-red-600 flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors"
-                                >
-                                    <LogOut className="w-4 h-4" />
-                                </button>
-                            </div>
-                        ) : (
+                    <div className="flex items-center gap-3">
+                        {isAdmin && (
                             <button
-                                onClick={() => setView('LOGIN')}
-                                className="text-xs font-bold uppercase tracking-wide text-slate-400 hover:text-indigo-600 transition-colors"
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-full hover:bg-red-500/20 transition-colors"
                             >
-                                Admin Login
+                                <LogOut className="w-3 h-3" /> LOGOUT
                             </button>
                         )}
+                        <div className="hidden sm:flex items-center gap-1 text-xs font-bold text-stone-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            LIVE UPDATES
+                        </div>
                     </div>
-                </div>
-            </nav>
-
-            {/* Modern Hero Section */}
-            <header className="relative pt-24 pb-32 px-4 overflow-hidden isolate">
-                {/* Background Image with Overlay */}
-                <div className="absolute inset-0 -z-20">
-                    <img
-                        src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop"
-                        className="w-full h-full object-cover opacity-20 filter blur-[2px] scale-105"
-                        alt="University Background"
-                    />
-                </div>
-
-                {/* Gradients */}
-                <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white/80 via-white/40 to-slate-50/90"></div>
-                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-indigo-50/40 via-transparent to-purple-50/40"></div>
-
-                {/* Floating Orbs (CSS Animation) */}
-                <div className="absolute top-20 left-10 w-64 h-64 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
-                <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
-
-                <div className="max-w-4xl mx-auto text-center relative z-10">
-                    {/* Live Indicator */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-200 bg-white/60 backdrop-blur-sm text-indigo-700 text-xs font-bold mb-8 shadow-sm animate-fade-in hover:scale-105 transition-transform cursor-default">
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                        </span>
-                        Live Activity Feed
-                    </div>
-
-                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1] drop-shadow-sm animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                        Shaping the <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Future</span>, <br /> One Milestone at a Time.
-                    </h1>
-
-                    <p className="text-slate-600 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                        Celebrating the groundbreaking research, student achievements, and vibrant events of the Department of Information Technology.
-                    </p>
                 </div>
             </header>
 
-            {/* Sticky Filter Bar */}
-            <div className="sticky top-16 z-40 bg-white/80 backdrop-blur-md border-y border-slate-200/60 shadow-sm transition-all">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-                    <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between">
+            {/* CINEMATIC HERO SECTION */}
+            <section className="relative min-h-[85vh] flex flex-col px-4 overflow-hidden border-b border-white/5">
 
-                        {/* Search */}
-                        <div className="relative flex-grow max-w-sm group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 group-focus-within:text-indigo-500 transition-colors" />
-                            <input
-                                type="text"
-                                placeholder="Search achievements..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-slate-100/50 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all shadow-sm"
+                {/* Hero Background Effects (Parallax Linked) */}
+                <div
+                    className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black z-0 will-change-transform"
+                    style={{ transform: `translateY(${scrollY * 0.5}px)` }}
+                ></div>
+                <div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[100px] will-change-transform"
+                    style={{ transform: `translate(-50%, -50%) translateY(${scrollY * 0.2}px)` }}
+                ></div>
+
+                {/* Content Wrapper */}
+                <div className="flex-grow flex flex-col justify-center items-center relative z-10 space-y-8 max-w-4xl mx-auto">
+
+                    {/* Logo Container - Styled to handle white background */}
+                    <div className="relative w-28 h-28 bg-white rounded-full p-2 shadow-[0_0_40px_-5px_rgba(255,255,255,0.3)] animate-fade-in-up">
+                        <div className="w-full h-full rounded-full overflow-hidden border border-stone-200">
+                            <img
+                                src="/logo.jpg"
+                                alt="Department Logo"
+                                className="w-full h-full object-contain"
+                                onError={(e) => e.currentTarget.style.display = 'none'}
                             />
                         </div>
-
-                        {/* Desktop Filters */}
-                        <div className="hidden md:flex items-center gap-2 overflow-x-auto no-scrollbar">
-                            <select
-                                value={selectedYear}
-                                onChange={(e) => setSelectedYear(e.target.value === 'ALL' ? 'ALL' : Number(e.target.value))}
-                                className="appearance-none pl-4 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-full text-xs font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer hover:bg-white hover:border-slate-300 transition-all shadow-sm"
-                                style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
-                            >
-                                <option value="ALL">All Years</option>
-                                {availableYears.map(year => <option key={year} value={year}>{year}</option>)}
-                            </select>
-
-                            <div className="w-px h-5 bg-slate-300 mx-2"></div>
-
-                            {Object.values(CATEGORIES).map(cat => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => setSelectedCategory(selectedCategory === cat.id ? 'ALL' : cat.id)}
-                                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all border shadow-sm ${selectedCategory === cat.id
-                                        ? `${cat.bgColor} ${cat.color} ${cat.borderColor} ring-1 ring-offset-1 ring-indigo-500 scale-105`
-                                        : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-slate-700 hover:bg-slate-50'}`}
-                                >
-                                    {cat.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Mobile Filter Toggle */}
-                        <button
-                            className="md:hidden flex items-center justify-center w-full py-2 bg-slate-100 rounded-lg text-sm font-medium text-slate-600 border border-slate-200"
-                            onClick={() => setShowFiltersMobile(!showFiltersMobile)}
-                        >
-                            <Filter className="w-4 h-4 mr-2" />
-                            {showFiltersMobile ? 'Hide Filters' : 'Show Filters'}
-                        </button>
+                        {/* Decorative ring */}
+                        <div className="absolute inset-0 border border-white/20 rounded-full scale-110 animate-pulse"></div>
                     </div>
 
-                    {/* Mobile Extended Filters */}
-                    {showFiltersMobile && (
-                        <div className="md:hidden pt-3 pb-2 space-y-3 border-t border-slate-100 mt-3 animate-fade-in">
-                            <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Year</label>
-                                <div className="flex gap-2 overflow-x-auto pb-2">
+                    {/* Main Title */}
+                    <div className="space-y-2 text-center">
+                        <h2 className="text-sm md:text-base font-bold text-stone-500 tracking-[0.5em] uppercase animate-fade-in-up">
+                            Department of
+                        </h2>
+                        <h1
+                            className={`text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white leading-[0.9] uppercase mix-blend-screen animate-fade-in-up ${isGlitching ? 'glitch-effect' : ''}`}
+                            style={{ animationDelay: '0.1s' }}
+                            data-text={`${heroText} TECHNOLOGY`}
+                        >
+                            {heroText}<br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-600">Technology</span>
+                        </h1>
+                    </div>
+
+                    {/* Subtitle */}
+                    <p className="text-base md:text-lg text-stone-400 max-w-lg mx-auto leading-relaxed font-light text-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                        Architecting the digital future through innovation, research, and technical excellence.
+                    </p>
+                </div>
+
+                {/* Bottom Scroll Indicator - Now in flex flow */}
+                <div className="pb-12 flex flex-col items-center gap-2 animate-bounce cursor-pointer opacity-50 hover:opacity-100 transition-opacity z-10"
+                    onClick={() => window.scrollTo({ top: window.innerHeight * 0.8, behavior: 'smooth' })}>
+                    <span className="text-[10px] font-bold tracking-widest text-stone-600 uppercase">Explore Timeline</span>
+                    <ChevronDown className="w-5 h-5 text-stone-500" />
+                </div>
+            </section>
+
+            {/* Sub-Header Filter Bar */}
+            <div className="relative z-40 bg-black border-none pt-2 pb-6">
+                <div className="max-w-2xl mx-auto px-4 sm:px-6">
+                    <div className="flex flex-col gap-4">
+
+                        {/* Controls Row */}
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="text-xs font-bold text-stone-500 tracking-wider hidden sm:block whitespace-nowrap">
+                                LATEST UPDATES
+                            </div>
+
+                            {/* Main Search Bar - Always Visible */}
+                            <div className="flex-grow max-w-md relative group">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 w-4 h-4 group-focus-within:text-blue-500 transition-colors" />
+                                <input
+                                    value={searchQuery}
+                                    onChange={e => setSearchQuery(e.target.value)}
+                                    placeholder="Search timeline..."
+                                    className="w-full bg-stone-900 border border-stone-800 rounded-full pl-10 pr-4 py-1.5 text-sm text-white focus:ring-2 focus:ring-blue-600 focus:outline-none transition-all placeholder:text-stone-600"
+                                />
+                            </div>
+
+                            <button
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${showFiltersMobile ? 'bg-white text-black border-white' : 'bg-transparent text-stone-400 border-stone-800 hover:border-stone-600'}`}
+                                onClick={() => setShowFiltersMobile(!showFiltersMobile)}
+                            >
+                                <span className="text-xs font-bold">FILTER</span>
+                                <Filter className="w-3 h-3" />
+                            </button>
+                        </div>
+
+                        {/* Search Row */}
+                        {showFiltersMobile && (
+                            <div className="bg-stone-900/50 p-4 rounded-xl border border-white/5 space-y-4 animate-fade-in">
+                                {/* Removed duplicate search input from here */}
+
+                                <div className="flex flex-wrap gap-2">
                                     <button
                                         onClick={() => setSelectedYear('ALL')}
-                                        className={`px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap shadow-sm ${selectedYear === 'ALL' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-slate-200 text-slate-600'}`}
+                                        className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded border ${selectedYear === 'ALL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-transparent text-stone-500 border-stone-800'}`}
                                     >
-                                        All Years
+                                        ALL YEARS
                                     </button>
                                     {availableYears.map(year => (
                                         <button
                                             key={year}
                                             onClick={() => setSelectedYear(year)}
-                                            className={`px-3 py-1.5 rounded-full text-xs font-medium border whitespace-nowrap shadow-sm ${selectedYear === year ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-slate-200 text-slate-600'}`}
+                                            className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded border ${selectedYear === year ? 'bg-blue-600 text-white border-blue-600' : 'bg-transparent text-stone-500 border-stone-800'}`}
                                         >
                                             {year}
                                         </button>
                                     ))}
                                 </div>
-                            </div>
-                            <div>
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Categories</label>
+
                                 <div className="flex flex-wrap gap-2">
                                     {Object.values(CATEGORIES).map(cat => (
                                         <button
                                             key={cat.id}
                                             onClick={() => setSelectedCategory(selectedCategory === cat.id ? 'ALL' : cat.id)}
-                                            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border shadow-sm ${selectedCategory === cat.id
-                                                ? `${cat.bgColor} ${cat.color} ${cat.borderColor}`
-                                                : 'bg-white text-slate-500 border-slate-200'}`}
+                                            className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded border ${selectedCategory === cat.id
+                                                ? `bg-white text-black border-white`
+                                                : 'bg-transparent text-stone-500 border-stone-800'}`}
                                         >
                                             {cat.label}
                                         </button>
                                     ))}
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
 
             {/* Main Content Area */}
             <main className="flex-grow relative z-0">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="max-w-2xl mx-auto px-4 sm:px-6 pb-24">
 
                     {/* Timeline Content */}
                     {loading ? (
-                        <div className="flex flex-col justify-center items-center py-20 text-slate-400">
-                            <Loader2 className="w-10 h-10 animate-spin mb-4 text-indigo-500" />
-                            <span className="font-medium">Retrieving history...</span>
+                        <div className="flex flex-col justify-center items-center py-20 text-stone-500">
+                            <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                            <span className="text-xs font-bold tracking-widest uppercase">Loading Feed...</span>
                         </div>
                     ) : filteredEntries.length === 0 ? (
-                        <div className="text-center py-24 px-6 bg-white/50 backdrop-blur-sm rounded-3xl border border-dashed border-slate-300 shadow-sm mx-auto max-w-lg">
-                            <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Filter className="w-8 h-8 text-slate-400" />
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-800 mb-1">No activities found</h3>
-                            <p className="text-slate-500 text-sm mb-6">Try adjusting your search or filters to find what you're looking for.</p>
+                        <div className="text-center py-24 px-6 border border-dashed border-white/10 rounded-2xl mx-auto">
+                            <p className="text-stone-500">No updates found.</p>
                             {hasActiveFilters && (
-                                <button
-                                    onClick={clearFilters}
-                                    className="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-700 rounded-full text-sm font-semibold hover:bg-indigo-100 transition-colors"
-                                >
-                                    <X className="w-4 h-4 mr-1.5" /> Clear Filters
-                                </button>
+                                <button onClick={clearFilters} className="text-blue-500 text-sm font-bold mt-2">Clear Filters</button>
                             )}
                         </div>
                     ) : (
-                        <div className="relative space-y-16">
+                        <div className="relative pt-4">
+                            {/* Continuous Vertical Line (Global) - Positioned relative to the grid layout in items */}
+                            {/* Actually, we'll let each item draw its segment to make it easier, or absolute here. 
+                                 Let's do absolute line for the whole container if we can, or per-item.
+                                 The reference has a very distinct solid line. Let's do a global line.
+                             */}
+                            <div className="absolute left-[87px] sm:left-[111px] top-0 bottom-0 w-[2px] bg-stone-800"></div>
+
                             {groupedEntries.map(({ year, list }) => (
                                 <div key={year} className="relative">
-                                    {/* Year Marker (Sticky) */}
-                                    <div className="sticky top-32 md:top-36 z-20 mb-10 flex justify-center pointer-events-none">
-                                        <div className="bg-white/90 backdrop-blur-md text-slate-800 px-8 py-2 rounded-full text-xl font-bold shadow-lg shadow-indigo-500/5 border border-slate-100 ring-1 ring-slate-200 flex items-center gap-2">
-                                            <Activity className="w-5 h-5 text-indigo-500" />
-                                            {year}
-                                        </div>
-                                    </div>
+                                    {/* Year header if we want it, or just let cards flow. Reference doesn't emphasize year headers strongly, mostly flows. 
+                                        But distinguishing years is good. Let's make it subtle side text or small marker.
+                                    */}
 
-                                    {/* Entries */}
-                                    <div className="space-y-0">
+                                    <div className="space-y-8">
                                         {list.map(entry => (
                                             <TimelineCard
                                                 key={entry.id}
                                                 entry={entry}
-                                                index={getEntryIndex(entry.id)}
+                                                index={0} // No alternating logic anymore
                                                 isAdmin={isAdmin}
                                                 onEdit={handleEdit}
                                                 onDelete={handleDelete}
@@ -360,6 +407,9 @@ const App: React.FC = () => {
                                             />
                                         ))}
                                     </div>
+
+                                    {/* Spacer between years */}
+                                    <div className="h-12"></div>
                                 </div>
                             ))}
                         </div>
@@ -369,12 +419,22 @@ const App: React.FC = () => {
 
             {/* Floating Action Button for Mobile Admin */}
             {isAdmin && (
-                <div className="md:hidden fixed bottom-6 right-6 z-50">
+                <div className="fixed bottom-6 right-6 z-50">
                     <button
                         onClick={handleCreate}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-transform active:scale-95"
+                        className="bg-blue-600 hover:bg-blue-500 text-white w-14 h-14 rounded-full shadow-[0_0_20px_rgba(37,99,235,0.5)] flex items-center justify-center transition-transform active:scale-95"
                     >
                         <Plus className="w-6 h-6" />
+                    </button>
+                    {!isAdmin && (<button onClick={() => setView('LOGIN')} className="mt-2 text-[10px] bg-black border border-stone-800 px-2 py-1 rounded">ADMIN</button>)}
+                </div>
+            )}
+
+            {/* Admin Login Button Fixed if not admin */}
+            {!isAdmin && (
+                <div className="fixed bottom-6 right-6 z-40 opacity-50 hover:opacity-100 transition-opacity">
+                    <button onClick={() => setView('LOGIN')} className="p-2 bg-black/50 backdrop-blur border border-white/10 rounded-full text-stone-500 hover:text-white">
+                        <Activity className="w-4 h-4" />
                     </button>
                 </div>
             )}
@@ -402,11 +462,11 @@ const App: React.FC = () => {
                 />
             )}
 
-            <footer className="bg-slate-900 text-slate-400 py-12 mt-12 border-t border-slate-800 relative z-10">
-                <div className="max-w-5xl mx-auto px-4 text-center">
-                    <GraduationCap className="w-8 h-8 mx-auto mb-4 text-indigo-500" />
-                    <p className="text-sm font-medium text-slate-300">Department of Information Technology</p>
-                    <p className="text-xs mt-2 text-slate-500">&copy; {new Date().getFullYear()} Vidya Jyothi Institute Of Technology. All rights reserved.</p>
+            <footer className="bg-black text-stone-600 py-12 mt-12 border-t border-white/5 relative z-10">
+                <div className="max-w-2xl mx-auto px-4 text-center">
+                    <GraduationCap className="w-6 h-6 mx-auto mb-4 text-stone-700" />
+                    <p className="text-xs font-bold tracking-widest uppercase text-stone-500">Department of Information Technology</p>
+                    <p className="text-[10px] mt-2 text-stone-700">&copy; {new Date().getFullYear()} VJIT.</p>
                 </div>
             </footer>
         </div>
