@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TimelineEntry } from '../types';
 import { CATEGORIES } from '../constants';
-import { Star, Trash2, Edit, FileText, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, Trash2, Edit, FileText, ArrowRight, ChevronLeft, ChevronRight, Share2, Check } from 'lucide-react';
 
 export const ImageWithFallback = ({ src, className }: { src: string, className?: string }) => {
     const [error, setError] = useState(false);
@@ -165,6 +165,17 @@ const CardContent = ({
     isFeatured
 }: any) => {
 
+    const [copied, setCopied] = useState(false);
+
+    const handleShare = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const url = `${window.location.origin}?id=${entry.id}`;
+        navigator.clipboard.writeText(url).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
+
     return (
         <div className="relative group/content">
             {/* Stacked Cards Effect (Interactive Hover) */}
@@ -207,7 +218,22 @@ const CardContent = ({
                         <span className={`text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1 block`}>
                             {categoryConfig.label}
                         </span>
-                        {isAdmin && <AdminButtons onEdit={() => onEdit(entry)} onDelete={() => onDelete(entry.id)} />}
+
+                        <div className="flex items-center gap-1 z-20 relative">
+                            {copied && (
+                                <span className="absolute -top-8 right-0 bg-black text-white text-[10px] py-1 px-2 rounded border border-white/20 whitespace-nowrap animate-fade-in z-50">
+                                    Link Copied!
+                                </span>
+                            )}
+                            <button
+                                onClick={handleShare}
+                                className="p-1 text-stone-500 hover:text-white hover:bg-stone-800 rounded transition-colors"
+                                title="Share"
+                            >
+                                {copied ? <Check className="w-3 h-3 text-green-500" /> : <Share2 className="w-3 h-3" />}
+                            </button>
+                            {isAdmin && <AdminButtons onEdit={() => onEdit(entry)} onDelete={() => onDelete(entry.id)} />}
+                        </div>
                     </div>
 
                     <h3 className="text-base sm:text-lg font-bold text-stone-100 mb-2 leading-snug">
@@ -233,7 +259,7 @@ const CardContent = ({
 };
 
 const AdminButtons = ({ onEdit, onDelete }: any) => (
-    <div className="flex gap-1 z-20 relative">
+    <div className="flex gap-1">
         <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 text-stone-500 hover:text-blue-400 hover:bg-blue-500/10 rounded transition-colors"><Edit className="w-3 h-3" /></button>
         <button onClick={(e) => { e.stopPropagation(); if (window.confirm('Delete?')) onDelete(); }} className="p-1 text-stone-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"><Trash2 className="w-3 h-3" /></button>
     </div>

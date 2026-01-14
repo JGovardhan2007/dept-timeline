@@ -104,6 +104,18 @@ const App: React.FC = () => {
         try {
             const data = await dataService.getAllEntries();
             setEntries(data);
+
+            // Check for deep link
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedId = urlParams.get('id');
+            if (sharedId) {
+                const entryToView = data.find(e => e.id === sharedId);
+                if (entryToView) {
+                    setViewingEntry(entryToView);
+                    // Clear the query param without refresh so it doesn't persist if they close
+                    window.history.replaceState({}, '', window.location.pathname);
+                }
+            }
         } catch (e) {
             console.error("Failed to fetch", e);
         } finally {
