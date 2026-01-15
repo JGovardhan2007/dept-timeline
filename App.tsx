@@ -479,6 +479,14 @@ const App: React.FC = () => {
                     <GraduationCap className="w-6 h-6 mx-auto mb-4 text-stone-700" />
                     <p className="text-xs font-bold tracking-widest uppercase text-stone-500">Department of Information Technology</p>
                     <p className="text-[10px] mt-2 text-stone-700">&copy; {new Date().getFullYear()} VJIT.</p>
+                    <a
+                        href="https://www.linkedin.com/in/govardhan-jyosula/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] mt-2 block hover:text-blue-500 transition-colors cursor-pointer"
+                    >
+                        Wanna say Hi?
+                    </a>
                 </div>
             </footer>
         </div>
