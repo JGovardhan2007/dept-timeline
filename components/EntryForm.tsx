@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TimelineEntry, CategoryType } from '../types';
 import { CATEGORIES } from '../constants';
-import { X, Upload, Loader2, FileText, ImageIcon } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 
 interface EntryFormProps {
@@ -24,7 +24,6 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
   });
   const [currentUrl, setCurrentUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -42,7 +41,6 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
         year: new Date().getFullYear(),
       });
       setCurrentUrl('');
-      setFile(null);
     }
   }, [initialData, isOpen]);
 
@@ -63,11 +61,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
     setFormData(prev => ({ ...prev, featured: e.target.checked }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
+
 
   const handleAddUrl = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,16 +98,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
       let finalMediaUrls = [...(formData.mediaUrls || [])];
       let primaryMediaUrl = formData.mediaUrl || '';
 
-      if (file) {
-        const uploadedUrl = await dataService.uploadFile(file);
-        // MOCK HACK: If it's a PDF, append a hash/param
-        let finalUploadedUrl = uploadedUrl;
-        if (file.type === 'application/pdf') {
-          finalUploadedUrl += '#type=pdf';
-        }
-        primaryMediaUrl = finalUploadedUrl;
-        finalMediaUrls.push(finalUploadedUrl);
-      }
+
 
       // If no file but we have URLs, ensure mediaUrl is set to the first one for backward compat
       if (!primaryMediaUrl && finalMediaUrls.length > 0) {
@@ -209,29 +194,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ initialData, isOpen, onClo
               ></textarea>
             </div>
 
-            {/* Media Upload */}
-            <div>
-              <label className="block text-sm font-medium text-stone-400 mb-1">Attachment</label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-stone-800 border-dashed rounded-lg hover:border-blue-500/50 transition-colors bg-black/40">
-                <div className="space-y-1 text-center">
-                  {file ? (
-                    file.type.includes('pdf') ? <FileText className="mx-auto h-8 w-8 text-red-500" /> : <ImageIcon className="mx-auto h-8 w-8 text-blue-500" />
-                  ) : (
-                    <Upload className="mx-auto h-8 w-8 text-stone-600" />
-                  )}
-                  <div className="flex text-sm text-stone-400 justify-center">
-                    <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-blue-500 hover:text-blue-400 focus-within:outline-none">
-                      <span>Upload a file</span>
-                      <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept="image/*,.pdf" />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs text-stone-600">PNG, JPG, PDF up to 5MB</p>
-                  {file && <p className="text-sm text-white font-medium mt-2">{file.name}</p>}
-                  {!file && formData.mediaUrl && <p className="text-xs text-stone-500 break-all mt-2">Current: {formData.mediaUrl.substring(0, 30)}...</p>}
-                </div>
-              </div>
-            </div>
+
 
             {/* Image URLs Input */}
             <div>
