@@ -242,13 +242,14 @@ const App: React.FC = () => {
                                 >
                                     <LogOut className="w-3 h-3" /> LOGOUT
                                 </button>
+                            </>
                         )}
-                                <div className="hidden sm:flex items-center gap-1 text-xs font-bold text-stone-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                    LIVE UPDATES
-                                </div>
-                            </div>
+                        <div className="hidden sm:flex items-center gap-1 text-xs font-bold text-stone-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            LIVE UPDATES
+                        </div>
                     </div>
+                </div>
             </header>
 
             {/* CINEMATIC HERO SECTION */}

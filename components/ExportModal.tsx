@@ -17,22 +17,37 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, entri
     const [includeImages, setIncludeImages] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
 
+    // New State for Mode
+    const [exportMode, setExportMode] = useState<'FILTER' | 'SINGLE'>('FILTER');
+    const [selectedEntryId, setSelectedEntryId] = useState('');
+
     if (!isOpen) return null;
 
     const handleExport = async () => {
         setIsGenerating(true);
         try {
             // Filter Data
-            let filtered = entries;
+            let filtered: TimelineEntry[] = [];
 
-            if (startDate) {
-                filtered = filtered.filter(e => e.date >= startDate);
-            }
-            if (endDate) {
-                filtered = filtered.filter(e => e.date <= endDate);
-            }
-            if (selectedCategory !== 'ALL') {
-                filtered = filtered.filter(e => e.category === selectedCategory);
+            if (exportMode === 'SINGLE') {
+                if (!selectedEntryId) {
+                    alert("Please select an entry.");
+                    setIsGenerating(false);
+                    return;
+                }
+                const found = entries.find(e => e.id === selectedEntryId);
+                if (found) filtered = [found];
+            } else {
+                filtered = entries;
+                if (startDate) {
+                    filtered = filtered.filter(e => e.date >= startDate);
+                }
+                if (endDate) {
+                    filtered = filtered.filter(e => e.date <= endDate);
+                }
+                if (selectedCategory !== 'ALL') {
+                    filtered = filtered.filter(e => e.category === selectedCategory);
+                }
             }
 
             // check if empty
@@ -74,52 +89,90 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, entri
                 {/* Body */}
                 <div className="p-6 space-y-6">
 
-                    {/* Date Range */}
-                    <div className="space-y-3">
-                        <label className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
-                            <Calendar className="w-3 h-3" /> Date Range
-                        </label>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    className="w-full bg-black border border-stone-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-600 outline-none"
-                                />
-                                <span className="text-[10px] text-stone-600 block mt-1">From</span>
-                            </div>
-                            <div>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={e => setEndDate(e.target.value)}
-                                    className="w-full bg-black border border-stone-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-600 outline-none"
-                                />
-                                <span className="text-[10px] text-stone-600 block mt-1">To</span>
-                            </div>
-                        </div>
+                    {/* Export Mode Selection */}
+                    <div className="flex p-1 bg-stone-950 rounded-lg mb-6 border border-white/5">
+                        <button
+                            onClick={() => setExportMode('FILTER')}
+                            className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${exportMode === 'FILTER' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500 hover:text-stone-300'}`}
+                        >
+                            Filter Range
+                        </button>
+                        <button
+                            onClick={() => setExportMode('SINGLE')}
+                            className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${exportMode === 'SINGLE' ? 'bg-stone-800 text-white shadow-md' : 'text-stone-500 hover:text-stone-300'}`}
+                        >
+                            Specific Entry
+                        </button>
                     </div>
 
-                    {/* Category */}
-                    <div className="space-y-3">
-                        <label className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
-                            <FilterIcon className="w-3 h-3" /> Category
-                        </label>
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value as any)}
-                            className="w-full bg-black border border-stone-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-600 outline-none"
-                        >
-                            <option value="ALL">All Categories</option>
-                            {Object.values(CATEGORIES).map(cat => (
-                                <option key={cat.id} value={cat.id}>{cat.label}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {exportMode === 'FILTER' ? (
+                        <>
+                            {/* Date Range */}
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                    <Calendar className="w-3 h-3" /> Date Range
+                                </label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <input
+                                            type="date"
+                                            value={startDate}
+                                            onChange={e => setStartDate(e.target.value)}
+                                            className="w-full bg-black border border-stone-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-600 outline-none"
+                                        />
+                                        <span className="text-[10px] text-stone-600 block mt-1">From</span>
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="date"
+                                            value={endDate}
+                                            onChange={e => setEndDate(e.target.value)}
+                                            className="w-full bg-black border border-stone-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-600 outline-none"
+                                        />
+                                        <span className="text-[10px] text-stone-600 block mt-1">To</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Category */}
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                    <FilterIcon className="w-3 h-3" /> Category
+                                </label>
+                                <select
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value as any)}
+                                    className="w-full bg-black border border-stone-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-600 outline-none"
+                                >
+                                    <option value="ALL">All Categories</option>
+                                    {Object.values(CATEGORIES).map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="space-y-3">
+                            <label className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-2">
+                                <FilterIcon className="w-3 h-3" /> Select Achievement
+                            </label>
+                            <select
+                                value={selectedEntryId}
+                                onChange={(e) => setSelectedEntryId(e.target.value)}
+                                className="w-full bg-black border border-stone-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-600 outline-none"
+                            >
+                                <option value="">-- Choose an Entry --</option>
+                                {entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(entry => (
+                                    <option key={entry.id} value={entry.id}>
+                                        {entry.date} - {entry.title.length > 40 ? entry.title.substring(0, 40) + '...' : entry.title}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
                     {/* Options */}
-                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/5">
+                    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/5 pt-4">
                         <input
                             type="checkbox"
                             checked={includeImages}
@@ -134,7 +187,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, entri
 
                     {/* Summary */}
                     <div className="text-xs text-stone-500 text-center">
-                        This will generate a PDF document using the official letterhead format.
+                        Generates a PDF on official letterhead.
                     </div>
 
                 </div>
