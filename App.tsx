@@ -7,7 +7,8 @@ import { AdminLogin } from './components/AdminLogin';
 import { EntryForm } from './components/EntryForm';
 import { ActivityDetail } from './components/ActivityDetail';
 import { BackgroundParticles } from './components/BackgroundParticles';
-import { Search, Filter, Plus, LogOut, ChevronRight, Loader2, GraduationCap, X, ChevronDown, Activity, Calendar, Award } from 'lucide-react';
+import { Search, Filter, Plus, LogOut, ChevronRight, Loader2, GraduationCap, X, ChevronDown, Activity, Calendar, Award, FileDown } from 'lucide-react';
+import { ExportModal } from './components/ExportModal';
 
 const App: React.FC = () => {
     // State
@@ -89,6 +90,7 @@ const App: React.FC = () => {
     // Admin State
     const [isAdmin, setIsAdmin] = useState(false);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isExportOpen, setIsExportOpen] = useState(false);
     const [editingEntry, setEditingEntry] = useState<TimelineEntry | undefined>(undefined);
 
     // Detail View State
@@ -227,19 +229,26 @@ const App: React.FC = () => {
 
                     <div className="flex items-center gap-3">
                         {isAdmin && (
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-full hover:bg-red-500/20 transition-colors"
-                            >
-                                <LogOut className="w-3 h-3" /> LOGOUT
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => setIsExportOpen(true)}
+                                    className="flex items-center gap-2 text-[10px] font-bold text-stone-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/10 hover:text-white transition-colors"
+                                >
+                                    <FileDown className="w-3 h-3" /> EXPORT
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-2 text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-full hover:bg-red-500/20 transition-colors"
+                                >
+                                    <LogOut className="w-3 h-3" /> LOGOUT
+                                </button>
                         )}
-                        <div className="hidden sm:flex items-center gap-1 text-xs font-bold text-stone-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            LIVE UPDATES
-                        </div>
+                                <div className="hidden sm:flex items-center gap-1 text-xs font-bold text-stone-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                    LIVE UPDATES
+                                </div>
+                            </div>
                     </div>
-                </div>
             </header>
 
             {/* CINEMATIC HERO SECTION */}
@@ -458,6 +467,12 @@ const App: React.FC = () => {
                     onCancel={() => setView('TIMELINE')}
                 />
             )}
+
+            <ExportModal
+                isOpen={isExportOpen}
+                onClose={() => setIsExportOpen(false)}
+                entries={entries}
+            />
 
             <EntryForm
                 isOpen={isFormOpen}
