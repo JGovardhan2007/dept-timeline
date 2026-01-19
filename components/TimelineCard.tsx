@@ -115,7 +115,7 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, index, isAdmi
 
     const dateObj = new Date(entry.date);
     const day = dateObj.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' }).replace('/', '/');
-    const time = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+
     const year = dateObj.getFullYear();
 
     // Check if stacked styling is needed
@@ -128,7 +128,6 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, index, isAdmi
             <div className="w-16 sm:w-20 pt-2 flex flex-col items-end text-right flex-shrink-0">
                 <span className="text-[10px] font-bold text-stone-600 leading-tight block">{year}</span>
                 <span className="text-xl sm:text-2xl font-black text-stone-400 leading-none block tracking-tighter">{day}</span>
-                <span className="text-[10px] font-mono text-stone-600 mt-1 block">{time}</span>
             </div>
 
             {/* 2. Timeline Line & Dot */}
